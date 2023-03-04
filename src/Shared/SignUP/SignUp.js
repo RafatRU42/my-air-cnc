@@ -1,17 +1,61 @@
-import React, { useContext } from 'react';
-import PrimaryButton from '../../Pages/PrimaryButton/PrimaryButton';
-import { AuthContext } from '../AuthProvider/AuthProvider';
-import { Link } from 'react-router-dom'
+
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import image from '../../images/image-2.jpg'
-// import image1 from '../../images/profile.jpg'
+import PrimaryButton from '../../Components/Button/PrimaryButton';
+import { useContext } from 'react';
+import { AuthContext } from '../AuthProvider/AuthProvider';
+import toast from 'react-hot-toast';
+
 
 
 
 const SignUp = () => {
-    const { googleSignIn } = useContext(AuthContext)
-    const handleSignIn = () => {
-        googleSignIn()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from?.pathname || '/'
+
+   const {createUser, updateUserProfile,verifyEmail,loading, setLoading} = useContext(AuthContext)
+
+   const imageHostKey = process.env.REACT_APP_imgbb_key;
+
+
+    const eventHandler = event =>{
+        event.preventDefault()
+        const name = event.target.name.value;
+        const email = event.target.email.value;
+        const image = event.target.image.value;
+        const password = event.target.password.value;
+
+        createUser(email,password) //user made 
+        .then(res => {
+            updateUserProfile(name) //profile updated
+            .then(updatedProfile =>{
+                verifyEmail()  // email verified
+                .then(verified =>{
+                    toast.success('Please Check Your Email to Verify!')
+                    navigate(from,{replace:true})
+                })
+            })
+        })
+        .catch(err =>{
+            console.log(err);
+        })
+
+        // note: After the hosting of image then the user will made after then the profile updated after then the email will verified
+
+    //  const formData = new FormData()
+    //  formData.append('image', image)
+    //  const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`
+    //  fetch(url, {
+    //     method:'POST',
+    //     body: formData
+    //  })
+    //  .then(res=>res.json())
+    //  .then(imgData =>{console.log(imgData);})
     }
+
+
+
     return (
         <div className=''>
 
@@ -28,7 +72,7 @@ const SignUp = () => {
                             <h1 className='my-3 text-4xl font-bold'>Signup</h1>
                             <p className='text-sm text-gray-400'>Create a new account</p>
                         </div>
-                        <form
+                        <form onSubmit={eventHandler}
                             noValidate=''
                             action=''
                             className='space-y-12 ng-untouched ng-pristine ng-valid'
