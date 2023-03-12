@@ -5,6 +5,7 @@ import PrimaryButton from '../../Components/Button/PrimaryButton';
 import { useContext } from 'react';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import toast from 'react-hot-toast';
+import SmallSpinner from '../../Components/Spinner/SmallSpinner';
 
 
 
@@ -23,15 +24,34 @@ const SignUp = () => {
         event.preventDefault()
         const name = event.target.name.value;
         const email = event.target.email.value;
-        const image = event.target.image.value;
+        const image = event.target.image.files[0];
         const password = event.target.password.value;
+        // console.log('img',image);
+
+      
+
+        // note: After the hosting of image then the user will made after then the profile updated after then the email will verified
+        // Note: Please confirm that image file is come properly. console the image file
+
+     const formData = new FormData()
+     formData.append('image', image)
+     const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`
+     fetch(url, {
+        method:'POST',
+        body: formData
+     })
+     .then(res=>res.json())
+     .then(imgData =>{
+
 
         createUser(email,password) //user made 
         .then(res => {
-            updateUserProfile(name) //profile updated
+            updateUserProfile(name,imgData.data.display_url) //profile updated
             .then(updatedProfile =>{
+                console.log('up',updatedProfile);
                 verifyEmail()  // email verified
                 .then(verified =>{
+                    console.log('veri', verified)
                     toast.success('Please Check Your Email to Verify!')
                     navigate(from,{replace:true})
                 })
@@ -39,19 +59,12 @@ const SignUp = () => {
         })
         .catch(err =>{
             console.log(err);
+            toast.error(err.message)
+            setLoading(false)
         })
-
-        // note: After the hosting of image then the user will made after then the profile updated after then the email will verified
-
-    //  const formData = new FormData()
-    //  formData.append('image', image)
-    //  const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`
-    //  fetch(url, {
-    //     method:'POST',
-    //     body: formData
-    //  })
-    //  .then(res=>res.json())
-    //  .then(imgData =>{console.log(imgData);})
+        
+    
+    })
     }
 
 
@@ -140,7 +153,7 @@ const SignUp = () => {
                                         type='submit'
                                         classes='w-full px-8 py-3 font-semibold rounded-md bg-gray-900 hover:bg-gray-700 hover:text-white text-gray-100'
                                     >
-                                        Sign up
+                                        {loading? <SmallSpinner></SmallSpinner> : 'Sign up'}
                                     </PrimaryButton>
                                 </div>
                             </div>

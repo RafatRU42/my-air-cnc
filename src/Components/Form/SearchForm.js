@@ -4,6 +4,7 @@ import { CalendarIcon } from '@heroicons/react/20/solid'
 import DatePicker from 'react-datepicker'
 
 const SearchForm = () => {
+  
   return (
     <div className='w-full max-w-sm p-6 m-auto mx-auto'>
       <h1 className='text-xl font-semibold text-gray-700'>

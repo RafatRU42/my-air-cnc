@@ -5,6 +5,7 @@ import PrimaryButton from '../Components/Button/PrimaryButton'
 // import PrimaryButton from '../../Components/Button/PrimaryButton'
 
 const ErrorPage = () => {
+
   return (
     <section className='flex items-center h-screen p-16 bg-gray-100 text-gray-900'>
       <div className='container flex flex-col items-center justify-center px-5 mx-auto my-8'>

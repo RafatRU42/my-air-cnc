@@ -4,16 +4,21 @@ import { Link } from 'react-router-dom'
 import { AuthContext } from '../Shared/AuthProvider/AuthProvider'
 import PrimaryButton from './Button/PrimaryButton'
 import toast from 'react-hot-toast'
+import SmallSpinner from './Spinner/SmallSpinner'
 
 const Navbar = () => {
-  const { user,logout } = useContext(AuthContext)
+  const { user,logout,loading,setLoading } = useContext(AuthContext)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
 
-  const handleSignOut = () =>{
+  const handleLogOut = () =>{
     logout()
     .then(logout =>{
-      toast.error('You Loged Out !')
+      toast.error('You Logged Out !')
+      // setLoading(false)
+    })
+    .catch(error=>{
+      // setLoading(false)
     })
   }
 
@@ -70,7 +75,7 @@ const Navbar = () => {
                     </Link>
 
                     <hr className='border-gray-200' />
-                    <div className='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform  hover:bg-gray-100 '>
+                    <button onClick={handleLogOut} className='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform  hover:bg-gray-100 '>
                       <svg
                         className='w-5 h-5 mx-1'
                         viewBox='0 0 24 24'
@@ -82,9 +87,9 @@ const Navbar = () => {
                           fill='currentColor'
                         ></path>
                       </svg>
-
-                      <span onClick={handleSignOut} className='mx-1'>Sign Out</span>
-                    </div>
+                      
+                      <span className='mx-1' >Sign Out</span>
+                    </button>
                   </div>
                 )}
               </div>

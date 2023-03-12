@@ -4,6 +4,9 @@ import PrimaryButton from '../Components/Button/PrimaryButton'
 import { useContext } from 'react';
 import { AuthContext } from './AuthProvider/AuthProvider';
 import toast from 'react-hot-toast';
+import SmallSpinner from '../Components/Spinner/SmallSpinner';
+import { useState } from 'react'
+
 
 
 // import PrimaryButton from '../../Components/Button/PrimaryButton'
@@ -13,7 +16,34 @@ const Login = () => {
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
 
-  const {signInWithGoogle,signin} = useContext(AuthContext)
+  const [userEmail, setUserEmail] = useState('') 
+
+  const {signInWithGoogle,signin,loading,setLoading,resetPassword} = useContext(AuthContext)
+
+
+    //  Reset the password =>
+     const handleReset = () =>{
+      resetPassword(userEmail)
+      .then(res =>{
+        toast.success("Please Check Your Email")
+        setLoading(false)
+      })
+      .catch(error=>{
+        console.log(error);
+
+        if(error.code === 'auth/missing-email'){
+          toast.error('Please Insert the Email First')
+        }
+        else{
+          toast.error(error.code)
+  
+        }
+
+        setLoading(false)
+
+   
+      })
+     }
 
 
   const handleLogin = event =>{
@@ -24,12 +54,13 @@ const Login = () => {
 
     signin(email,password)
     .then(result =>{
+
       toast.success('You successfully Logged In')
       navigate(from,{replace:true})
     })
     .catch(err =>{
       console.log('err',err);
-      // toast.error('You Can not logged in. Please try again later.')
+      setLoading(false)
 
 
       if(err.code === 'auth/wrong-password'){
@@ -42,6 +73,9 @@ const Login = () => {
       
      
     })
+
+  
+
   }
 
   const googleSignIn = () =>{
@@ -49,6 +83,10 @@ const Login = () => {
     .then(result =>{
       toast.success('You success to Made User!')
       navigate(from,{replace:true})
+    })
+    .catch(error =>{
+      toast.error('You can not sign in properly')
+      setLoading(false)
     })
   }
   return (
@@ -71,6 +109,7 @@ const Login = () => {
                 Email address
               </label>
               <input
+              onBlur={event => setUserEmail(event.target.value)}  // When the input field will blur then the email will save in state
                 type='email'
                 name='email'
                 id='email'
@@ -102,12 +141,12 @@ const Login = () => {
               type='submit'
               classes='w-full px-8 py-3 font-semibold rounded-md bg-gray-900 hover:bg-gray-700 hover:text-white text-gray-100'
             >
-              Sign in
+              {loading? <SmallSpinner></SmallSpinner> : 'Sign In'}
             </PrimaryButton>
           </div>
         </form>
         <div className='space-y-1'>
-          <button className='text-xs hover:underline text-gray-400'>
+          <button className='text-xs hover:underline text-gray-400' onClick={handleReset}>
             Forgot password?
           </button>
         </div>
